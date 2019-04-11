@@ -1,0 +1,9 @@
+version: '2'
+services:
+  test:
+    image: dtspence/hadoop-test:compose-0.2.0-cdh5.14.2
+    container_name: test
+    depends_on:
+      - namenode
+    env_file:
+      - ./hadoop.env
