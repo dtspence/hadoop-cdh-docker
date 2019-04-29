@@ -2,7 +2,7 @@ version: "2"
 
 services:
   namenode:
-    image: dtspence/hadoop-namenode:compose-0.2.0-cdh5.14.2
+    image: dtspence/hadoop-namenode:compose-0.3.0-cdh5.14.2
     container_name: namenode
     volumes:
       - hadoop_namenode:/hadoop/dfs/name
@@ -12,7 +12,7 @@ services:
       - ./hadoop.env
   
   resourcemanager:
-    image: dtspence/hadoop-resourcemanager:compose-0.2.0-cdh5.14.2
+    image: dtspence/hadoop-resourcemanager:compose-0.3.0-cdh5.14.2
     container_name: resourcemanager
     depends_on:
       - namenode
@@ -22,19 +22,19 @@ services:
       - ./hadoop.env
   
   historyserver:
-    image: dtspence/hadoop-historyserver:compose-0.2.0-cdh5.14.2
+    image: dtspence/hadoop-historyserver:compose-0.3.0-cdh5.14.2
     container_name: historyserver
+    ports:
+      - "19888"
     depends_on:
       - namenode
       - datanode1
       - datanode2
-    volumes:
-      - hadoop_historyserver:/hadoop/yarn/timeline
     env_file:
       - ./hadoop.env
   
   nodemanager1:
-    image: dtspence/hadoop-nodemanager:compose-0.2.0-cdh5.14.2
+    image: dtspence/hadoop-nodemanager:compose-0.3.0-cdh5.14.2
     container_name: nodemanager1
     depends_on:
       - namenode
@@ -44,7 +44,7 @@ services:
       - ./hadoop.env
   
   datanode1:
-    image: dtspence/hadoop-datanode:compose-0.2.0-cdh5.14.2
+    image: dtspence/hadoop-datanode:compose-0.3.0-cdh5.14.2
     container_name: datanode1
     depends_on:
       - namenode
@@ -54,7 +54,7 @@ services:
       - ./hadoop.env
   
   datanode2:
-    image: dtspence/hadoop-datanode:compose-0.2.0-cdh5.14.2
+    image: dtspence/hadoop-datanode:compose-0.3.0-cdh5.14.2
     container_name: datanode2
     depends_on:
       - namenode
@@ -64,7 +64,7 @@ services:
       - ./hadoop.env
   
   datanode3:
-    image: dtspence/hadoop-datanode:compose-0.2.0-cdh5.14.2
+    image: dtspence/hadoop-datanode:compose-0.3.0-cdh5.14.2
     container_name: datanode3
     depends_on:
       - namenode

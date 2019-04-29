@@ -1,15 +1,12 @@
 ARG VERSION
 FROM dtspence/hadoop-base:$VERSION
 
-HEALTHCHECK CMD curl -f http://localhost:8188/ || exit 1
-
-ENV YARN_CONF_yarn_timeline___service_leveldb___timeline___store_path=/hadoop/yarn/timeline
-RUN mkdir -p /hadoop/yarn/timeline
-VOLUME /hadoop/yarn/timeline
+HEALTHCHECK CMD curl -f http://$HOSTNAME:19888/ || exit 1
 
 ADD run.sh /run.sh
 RUN chmod a+x /run.sh
 
-EXPOSE 8188
+EXPOSE 10020
+EXPOSE 19888
 
 CMD ["/run.sh"]
