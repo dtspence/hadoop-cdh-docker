@@ -18,7 +18,7 @@ RUN yum install -y \
     yum clean all
 
 RUN mkdir /tmp/hadoop-src && \
-    wget https://archive.apache.org/dist/hadoop/core/hadoop-2.6.0/hadoop-2.6.0-src.tar.gz -P /tmp/hadoop-src && \
+    wget https://archive.apache.org/dist/hadoop/core/hadoop-3.0.0/hadoop-3.0.0-src.tar.gz -P /tmp/hadoop-src && \
     tar xf /tmp/hadoop-src/hadoop-2.6.0-src.tar.gz -C /tmp/hadoop-src
 
 ARG MAVEN_VERSION=3.5.4
