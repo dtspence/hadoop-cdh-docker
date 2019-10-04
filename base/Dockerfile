@@ -1,38 +1,40 @@
-ARG HADOOP_VERSION
-
-FROM dtspence/hadoop-native:${HADOOP_VERSION}-x64 as native
 FROM alerman/docker-compose-base
 
-ARG VERSION
+ARG CDH_VERSION
 ARG HADOOP_VERSION
 
-ARG CDH_VERSION
+RUN yum -y install epel-release && \
+    rm -rf /var/cache/yum/*
 
+COPY cloudera-cdh.repo /etc/yum.repos.d
+
+RUN rpm --import https://archive.cloudera.com/cm6/6.3.0/redhat7/yum/RPM-GPG-KEY-cloudera 
+RUN yum -y install supervisor hadoop && \
+    rm -rf /var/cache/yum/*
+
+RUN yum -y install net-tools && \
+    rm -rf /var/cache/yum/*
+
+ENV CDH_VERSION=${CDH_VERSION}
 ENV HADOOP_PREFIX=/opt/hadoop/hadoop-${HADOOP_VERSION}-cdh${CDH_VERSION}
+ENV HADOOP_HOME /usr/lib/hadoop
+ENV HADOOP_CONF_DIR /etc/hadoop/conf
+ENV HADOOP_COMMON_HOME /usr/lib/hadoop
+ENV HADOOP_HDFS_HOME /usr/lib/hadoop-hdfs
+ENV HADOOP_YARN_HOME /usr/lib/hadoop-yarn
+ENV HADOOP_MAPRED_HOME /usr/lib/hadoop-mapreduce
 
-RUN curl http://archive.cloudera.com/cdh5/cdh/5/hadoop-${HADOOP_VERSION}-cdh${CDH_VERSION}.tar.gz -o /tmp/hadoop.tar.gz && \
-    tar xzf /tmp/hadoop.tar.gz -C /opt/hadoop && \
-    ln -s $HADOOP_PREFIX /opt/hadoop/current && \
-    chown -R hdfs:hdfs /opt/hadoop/current && \
-    chown -R hdfs:hdfs $HADOOP_PREFIX && \
-    rm -f /tmp/hadoop.tar.gz
-
-RUN yum install -y which bzip2-devel snappy-devel openssl-devel && \
-    yum clean all
-
-COPY --from=native /opt/hadoop/native /opt/hadoop/current/lib/native
-
-ENV HADOOP_CONF_DIR=/etc/hadoop
 ENV JAVA_HOME=/usr/lib/jvm/jre
 ENV MULTIHOMED_NETWORK=1
 
-RUN ln -s $HADOOP_PREFIX/etc/hadoop /etc/hadoop && \
-    cp /etc/hadoop/mapred-site.xml.template /etc/hadoop/mapred-site.xml && \
-    mkdir $HADOOP_PREFIX/logs && \
-    mkdir /hadoop-data
+RUN ln -s ${HADOOP_PREFIX}/etc/hadoop ${HADOOP_CONF_DIR} && \
+    ln -s ${HADOOP_HOME} ${HADOOP_PREFIX}
 
 ENV USER=root
 ENV PATH $HADOOP_PREFIX/bin/:$PATH
+
+COPY entrypoint.d/* /entrypoint.d/
+ONBUILD COPY entrypoint.d/* /entrypoint.d/
 
 ADD entrypoint.sh /entrypoint.sh
 RUN chmod a+x /entrypoint.sh

@@ -6,4 +6,3 @@ if [ ! -d $datadir ]; then
   exit 2
 fi
 
-$HADOOP_PREFIX/bin/hdfs --config $HADOOP_CONF_DIR datanode
