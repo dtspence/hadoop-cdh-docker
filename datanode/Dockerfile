@@ -7,7 +7,6 @@ ENV HDFS_CONF_dfs_datanode_data_dir=file:///hadoop/dfs/data
 RUN mkdir -p /hadoop/dfs/data
 VOLUME /hadoop/dfs/data
 
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
 EXPOSE 9864-9867
 
+CMD ["hdfs","datanode"]

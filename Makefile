@@ -26,6 +26,8 @@ build-%:
 	$(eval IMG := $(call uc,$*)_IMAGE_NAME)
 	docker build -t $(NAMESPACE)/$(${IMG}):$(VERSION) -f $*/Dockerfile \
 		--build-arg VERSION=$(VERSION) \
+		--build-arg HADOOP_VERSION=$(HADOOP_VERSION) \
+		--build-arg CDH_VERSION=$(CDH_VERSION) \
 		$*
 
 push-version: $(patsubst %, push-version-%,$(names))  ## Push all images to the repository (or specific image)

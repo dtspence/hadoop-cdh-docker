@@ -9,7 +9,7 @@ RUN yum -y install epel-release && \
 COPY cloudera-cdh.repo /etc/yum.repos.d
 
 RUN rpm --import https://archive.cloudera.com/cm6/6.3.0/redhat7/yum/RPM-GPG-KEY-cloudera 
-RUN yum -y install supervisor hadoop && \
+RUN yum -y install hadoop && \
     rm -rf /var/cache/yum/*
 
 RUN yum -y install net-tools && \
@@ -28,15 +28,21 @@ ENV JAVA_HOME=/usr/lib/jvm/jre
 ENV MULTIHOMED_NETWORK=1
 
 RUN ln -s ${HADOOP_PREFIX}/etc/hadoop ${HADOOP_CONF_DIR} && \
-    ln -s ${HADOOP_HOME} ${HADOOP_PREFIX}
+    ln -s ${HADOOP_HOME} ${HADOOP_PREFIX} && \
+    mkdir -p /opt/scripts
 
 ENV USER=root
 ENV PATH $HADOOP_PREFIX/bin/:$PATH
 
 COPY entrypoint.d/* /entrypoint.d/
-ONBUILD COPY entrypoint.d/* /entrypoint.d/
 
+ONBUILD COPY entrypoint.d/* /entrypoint.d/
+ONBUILD RUN chmod -R +x /entrypoint.d
+
+ADD scripts/ /opt/scripts
 ADD entrypoint.sh /entrypoint.sh
-RUN chmod a+x /entrypoint.sh
+
+RUN chmod +x /entrypoint.sh && \
+    chmod +x /opt/scripts/*
 
 ENTRYPOINT ["/entrypoint.sh"]
